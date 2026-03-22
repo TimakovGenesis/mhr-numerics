@@ -1,5 +1,6 @@
 [README.md](https://github.com/user-attachments/files/26167805/README.md)
 # mhr_numerics
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19165246.svg)](https://doi.org/10.5281/zenodo.19165246)
 
 **Numerical mathematics library for lattice reduction, finite-field linear algebra, and variational optimisation.**
 
