@@ -5,8 +5,8 @@
 
 **Numerical mathematics library for lattice reduction, finite-field linear algebra, and variational optimisation.**
 
-Reproducible software artefact accompanying the manuscript:
-> *Spectral Modular Identity and Variational Lattice Reduction*
+Spectral gap and modular degree of elliptic curves.
+> *Part I: Foundations of arithmetic spectroscopy*
 
 ---
 
