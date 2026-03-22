@@ -5,8 +5,8 @@
 
 **Numerical mathematics library for lattice reduction, finite-field linear algebra, and variational optimisation.**
 
-Spectral gap and modular degree of elliptic curves.
-> *Part I: Foundations of arithmetic spectroscopy*
+Reproducible software artefact accompanying the manuscript:
+> *Spectral gap and modular degree of elliptic curves. Part I: Foundations of arithmetic spectroscopy*
 
 ---
 
