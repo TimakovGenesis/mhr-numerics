@@ -1,0 +1,29 @@
+{
+  "title": "mhr_numerics: Numerical Mathematics Library for Arithmetic Spectroscopy",
+  "description": "Reproducible software artefact accompanying the manuscript 'Spectral gap and modular degree of elliptic curves. Part I: Foundations of arithmetic spectroscopy' (A. Timakov, 2026). Provides: (1) exact linear algebra over finite prime fields F_p and GF(2); (2) classical lattice reduction algorithms (Gaussian 2D, LLL, BKZ, Babai CVP); (3) Lagrange polynomial interpolation and Berlekamp-Massey LFSR synthesis over F_p; (4) the MHR variational solver implementing the Gaussian ansatz energy functional for the Modular Hamiltonian Relaxation operator, minimised via L-BFGS-B with adiabatic coupling schedule.",
+  "upload_type": "software",
+  "license": "MIT",
+  "keywords": [
+    "lattice reduction", "LLL", "BKZ", "finite fields", "linear algebra",
+    "variational methods", "polynomial interpolation", "Berlekamp-Massey",
+    "Gaussian reduction", "Babai CVP", "Hermite factor", "GF(2)", "F_p",
+    "arithmetic spectroscopy", "elliptic curves", "modular degree",
+    "Schrodinger operator", "spectral gap"
+  ],
+  "language": "Python 3.10+",
+  "related_identifiers": [
+    {"relation": "isSupplementTo", "identifier": "math.NT/XXXX.XXXXX",
+     "note": "Replace XXXX.XXXXX with arXiv ID once assigned"}
+  ],
+  "references": [
+    "Lenstra, Lenstra, Lovasz (1982). Factoring polynomials with rational coefficients. Math. Ann. 261.",
+    "Babai (1986). On Lovasz lattice reduction and the nearest lattice point problem. Combinatorica 6(1).",
+    "Schnorr, Euchner (1994). Lattice basis reduction. Math. Programming 66.",
+    "Helffer, Sjostrand (1984). Multiple wells in the semi-classical limit I. Comm. PDE 9(4).",
+    "von zur Gathen, Gerhard (2013). Modern Computer Algebra. Cambridge University Press.",
+    "Berlekamp (1968). Algebraic Coding Theory. McGraw-Hill.",
+    "Massey (1969). Shift-register synthesis and BCH decoding. IEEE Trans. Inf. Theory 15(1).",
+    "Agashe, Ribet, Stein (2006). The Manin constant. Pure Appl. Math. Q. 2(2).",
+    "Cesnavicius (2018). The Manin constant in the semistable case. Compositio Math. 154(9)."
+  ]
+}
