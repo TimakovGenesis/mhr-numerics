@@ -49,7 +49,7 @@ References
 """
 
 from __future__ import annotations
-from linalg_Fp import _check_prime
+from .linalg_Fp import _check_prime
 
 __all__ = [
     "lagrange_interpolate_Fp",
