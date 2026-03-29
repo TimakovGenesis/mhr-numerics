@@ -1,5 +1,5 @@
 """
-tests/test_mhr_numerics.py
+tests/test_core.py
 ==========================
 Synthetic test suite for mhr_numerics.
 
@@ -17,25 +17,26 @@ import random
 
 import numpy as np
 import pytest
+import sys, os
 
 # Add parent to path for direct execution
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from linalg_Fp import (
+from core.linalg_Fp import (
     gauss_jordan_Fp, det_Fp, inv_Fp, rank_Fp, solve_Fp, is_prime
 )
-from linalg_GF2 import (
+from core.linalg_GF2 import (
     rref_GF2, rank_GF2, null_space_GF2, mat_mul_GF2, solve_GF2
 )
-from lattice import (
+from core.lattice import (
     gauss_reduce_2d, babai_cvp, lll_reduce, hermite_factor,
     shortest_vector_norm_bound, gram_schmidt
 )
-from interpolation import (
+from core.interpolation import (
     lagrange_interpolate_Fp, poly_eval_Fp, poly_mul_Fp, poly_add_Fp,
     poly_roots_Fp, berlekamp_massey_Fp
 )
-from variational import mhr_energy, mhr_solve, adiabatic_schedule
+from Part_I.variational import mhr_energy, mhr_solve, adiabatic_schedule
 
 # ---------------------------------------------------------------------------
 # Small primes used in tests (all verified prime)
