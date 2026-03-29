@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+title: "mhr-numerics: Numerical Mathematics Library for Arithmetic Spectroscopy"
+version: "2.1"
+date-released: "2026-03-01"
+doi: 10.5281/zenodo.19165246
+license: MIT
+url: "https://github.com/TimakovGenesis/mhr-numerics"
+repository-code: "https://github.com/TimakovGenesis/mhr-numerics"
+abstract: >
+  Companion code to the Arithmetic Spectroscopy paper series.
+  Implements the variational MHR (Modular Hamiltonian Relaxation) operator
+  framework for extracting arithmetic invariants of elliptic curves from
+  spectral data, together with exact linear algebra over F_p and GF(2),
+  lattice reduction, and polynomial interpolation.
+authors:
+  - family-names: Timakov
+    given-names: Andrew
+    email: andrew.genesis@proton.me
+keywords:
+  - elliptic curves
+  - arithmetic spectroscopy
+  - MHR operator
+  - spectral gap
+  - BSD conjecture
+  - variational methods
+  - lattice reduction
+  - finite fields
+references:
+  - type: article
+    title: >
+      Spectral gap and modular degree of elliptic curves.
+      Part I: Foundations of arithmetic spectroscopy
+    authors:
+      - family-names: Timakov
+        given-names: Andrew
+    year: 2026
+    doi: 10.5281/zenodo.19183116
