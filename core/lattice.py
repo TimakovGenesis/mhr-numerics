@@ -433,22 +433,25 @@ def bkz_reduce(
     .. [CN11] Chen, Y. & Nguyen, P.Q. (2011). BKZ 2.0. ASIACRYPT 2011.
               Improved tour strategies and prediction of running time.
     """
-    from fpylll import IntegerMatrix, LLL as fpLLL, BKZ, FPLLL
+    try:
+        from fpylll import IntegerMatrix, LLL as fpLLL, BKZ, FPLLL
 
-    n = len(B)
-    precision = 150 if n <= 120 else 256
-    FPLLL.set_precision(precision)
+        n = len(B)
+        precision = 150 if n <= 120 else 256
+        FPLLL.set_precision(precision)
 
-    M = IntegerMatrix.from_matrix(B)
-    fpLLL.reduction(M)
-    params = BKZ.Param(
-        block_size=block_size,
-        strategies=BKZ.DEFAULT_STRATEGY,
-        max_loops=max_loops,
-        auto_abort=True,
-    )
-    BKZ.reduction(M, params)
-    return [list(M[i]) for i in range(M.nrows)]
+        M = IntegerMatrix.from_matrix(B)
+        fpLLL.reduction(M)
+        params = BKZ.Param(
+            block_size=block_size,
+            strategies=BKZ.DEFAULT_STRATEGY,
+            max_loops=max_loops,
+            auto_abort=True,
+        )
+        BKZ.reduction(M, params)
+        return [list(M[i]) for i in range(M.nrows)]
+    except ImportError:
+        raise ImportError("fpylll is required for BKZ reduction. Install it with 'pip install fpylll'")
 
 
 # ---------------------------------------------------------------------------
