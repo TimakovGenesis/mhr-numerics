@@ -1,165 +1,181 @@
-# mhr_numerics
+# mhr-numerics
 
 [![Python Test Suite](https://github.com/TimakovGenesis/mhr-numerics/actions/workflows/pytest.yml/badge.svg)](https://github.com/TimakovGenesis/mhr-numerics/actions/workflows/pytest.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19165246.svg)](https://doi.org/10.5281/zenodo.19165246)
 
-**Numerical mathematics library for lattice reduction, finite-field linear algebra, and variational optimisation.**
+**Numerical Mathematics Library for Arithmetic Spectroscopy**
 
-Reproducible software artefact accompanying the manuscript:
-> *Spectral gap and modular degree of elliptic curves. Part I: Foundations of arithmetic spectroscopy*
+Companion code to the paper series:
+
+| Part | Title | Status | DOI |
+|------|-------|--------|-----|
+| I | Foundations of arithmetic spectroscopy | Submitted: *Exp. Math.* ID 267435039 | [10.5281/zenodo.19183116](https://doi.org/10.5281/zenodo.19183116) |
+| II | The spectral rank criterion and Selmer theory | In preparation | [10.5281/zenodo.19165246](https://doi.org/10.5281/zenodo.19165246) |
+| III | Néron–Tate regulator from spectral deformation | Planned | — |
 
 ---
 
 ## Overview
 
-`mhr_numerics` is a self-contained Python library providing rigorous, documented implementations of:
+The library implements the **MHR (Modular Hamiltonian Relaxation)** operator framework for extracting arithmetic invariants of elliptic curves from spectral data. The central result:
 
-| Module | Contents |
-|---|---|
-| `linalg_Fp.py` | Gauss–Jordan elimination, determinant, inverse, rank, and linear system solving over arbitrary prime fields F_p |
-| `linalg_GF2.py` | Bit-packed linear algebra over GF(2): RREF, rank, null space, matrix product, system solving |
-| `lattice.py` | Gaussian 2D reduction, Babai nearest-plane CVP, LLL and BKZ reduction wrappers (via fpylll), Hermite factor |
-| `interpolation.py` | Lagrange interpolation over F_p, polynomial arithmetic, root finding (Cantor–Zassenhaus via sympy), Berlekamp–Massey LFSR synthesis |
-| `variational.py` | MHR variational solver: Gaussian ansatz energy functional, adiabatic coupling schedule, L-BFGS-B optimisation |
+```
+lim_{λ→∞} ΔE(λ) = deg φ_E        (rank 0,  Theorem I.1)
+ΔE(λ) ≡ 0                         (rank ≥ 1, Proposition I.2)
+```
 
-All functions carry **mathematical docstrings** with explicit formulas, algorithm descriptions, complexity bounds, and references to the primary literature.
+Part II adds the real variational solver and the full asymptotic rank signal `a₁ = −D²/π²`.
+
+### Repository structure
+
+```
+mhr-numerics/
+├── core/           Mathematical foundations (linalg, lattice, interpolation)
+├── Part_I/         Gaussian ansatz variational solver (Part I)
+├── Part_II/        Real MHR solver, deformation engine, verification (Part II)
+├── figures/        Vector PDF figures for Part II
+└── tests/          Test suite (< 30 s, CI-compatible)
+```
 
 ---
 
 ## Installation
 
 ```bash
-pip install numpy scipy sympy
-# Optional (for LLL/BKZ):
+pip install numpy scipy
+# Optional — for LLL/BKZ in core/lattice.py:
 pip install fpylll
+# Optional — for root finding in core/interpolation.py:
+pip install sympy
 ```
-
-No other dependencies are required.
 
 ---
 
-## Quickstart
+## Quick start
 
-### Linear algebra over F_p
+### Part II: rank signal from spectral gap
 
 ```python
-from linalg_Fp import gauss_jordan_Fp, det_Fp, solve_Fp
+from Part_II.mhr_real_solver import mhr_real_solver
+
+# Curve 37.a1: rank=0, deg φ_E = 2
+delta_E, ok, iters, res = mhr_real_solver(1000.0, {"deg_phi": 2, "rank": 0})
+print(f"ΔE(1000) = {delta_E:.7f}")   # → 1.9995501
+```
+
+### Part II: full deformation scan
+
+```python
+from Part_II.deformation import DeformationEngine
+from Part_II.mhr_real_solver import mhr_real_solver
+import numpy as np
+
+eng = DeformationEngine(
+    curve_params={"label": "37a1", "deg_phi": 2, "rank": 0},
+    solver=mhr_real_solver,
+)
+result = eng.analyse(
+    lambda_range=np.logspace(2, 5, 40),
+    do_bootstrap=True,
+    n_bootstrap=400,
+)
+print(f"a₁ = {result['fit'].a1:.4f}")
+print(f"collapse: {result['fit'].spectral_collapse}")
+```
+
+### Core: linear algebra over F_p
+
+```python
+from core.linalg_Fp import gauss_jordan_Fp, det_Fp
 
 A = [[1, 2, 3], [4, 5, 6], [7, 8, 10]]
-p = 101
-R, pivots, rank = gauss_jordan_Fp(A, p)
-print(f"rank = {rank}, pivots = {pivots}")
-
-d = det_Fp(A, p)
-print(f"det(A) mod {p} = {d}")
-
-x = solve_Fp([[2, 1], [1, 3]], [5, 7], p=11)
-print(f"solution: {x}")
-```
-
-### Lattice reduction
-
-```python
-from lattice import gauss_reduce_2d, lll_reduce, hermite_factor
-import numpy as np
-
-# 2D Gaussian reduction
-b1, b2 = gauss_reduce_2d([13, 21], [8, 13])
-print(f"Reduced: {b1}, {b2}")
-
-# LLL reduction (requires fpylll)
-B = [[1, 0, 2, 1], [0, 2, 1, 3], [3, 1, 0, 2], [1, 2, 3, 0]]
-B_lll = lll_reduce(B, delta=0.99)
-norm0 = np.linalg.norm(B_lll[0])
-vol   = abs(np.linalg.det(np.array(B, dtype=float)))
-delta = hermite_factor(norm0, vol, n=4)
-print(f"Hermite factor δ = {delta:.4f}")
-```
-
-### Polynomial interpolation over F_p
-
-```python
-from interpolation import lagrange_interpolate_Fp, poly_eval_Fp, berlekamp_massey_Fp
-
-# Reconstruct f(x) = x² + x + 1 over F_11
-p = 11
-f = lambda x: (x**2 + x + 1) % p
-pts = [(i, f(i)) for i in range(3)]
-poly = lagrange_interpolate_Fp(pts, p)
-print(poly)   # [1, 1, 1]
-
-# Berlekamp–Massey: find LFSR for a sequence
-seq = [1, 1, 2, 3, 5, 1, 6, 0]   # Fibonacci mod 7
-C = berlekamp_massey_Fp(seq, p=7)
-print(f"Connection polynomial: {C}")
-```
-
-### MHR variational solver
-
-```python
-from lattice import lll_reduce
-from variational import mhr_solve
-import numpy as np
-
-rng = np.random.default_rng(42)
-B_raw = rng.integers(-10, 10, size=(8, 8)).tolist()
-B_lll = lll_reduce(B_raw)
-
-result = mhr_solve(B_lll, lambda_max=300, n_outer=60, seed=42)
-print(f"Candidate: {result.candidate}")
-print(f"‖B·v‖ = {result.candidate_norm:.4f}")
-print(f"Converged: {result.converged}")
+R, pivots, rank = gauss_jordan_Fp(A, p=101)
+print(f"rank = {rank}")
 ```
 
 ---
 
-## Running the test suite
+## Verification (Part II)
+
+Real solver vs Part I control values [F: Tab. 2–4]:
+
+| λ | ΔE_real | ΔE_Part_I | Error |
+|---|---------|-----------|-------|
+| 100 | 1.9940956 | 1.9941000 | 2.2×10⁻⁶ |
+| 1000 | 1.9995501 | 1.9995500 | 4.7×10⁻⁸ |
+| 5000 | 1.9999152 | 1.9999150 | 8.9×10⁻⁸ |
+
+Spectral collapse (37.b1, rank=1): ΔE from 4.7×10⁻² at λ=100 to < 10⁻⁹ at λ=1000.
 
 ```bash
-cd mhr_numerics
-python -m pytest tests/ -v
+python tests/smoke_test.py           # < 30 s
+python Part_II/verify_real_solver.py # full table vs Part I
+python -m pytest tests/ -v           # full suite
 ```
 
-All tests use **synthetic mathematical inputs** (random matrices, Mersenne primes, Fibonacci lattices) and do not depend on any external datasets.
+---
 
-Expected output: ≥ 40 tests, all passing.
+## Module reference
+
+### `Part_II/`
+
+| File | Description |
+|------|-------------|
+| `mhr_real_solver.py` | Real variational MHR solver. L-BFGS-B on Gaussian ansatz (Part I eq. 4.2). Bloch band width for rank ≥ 1. |
+| `deformation.py` | Asymptotic deformation engine v2.0. Extracts a₁ = −D²/π² via regression + bootstrap. |
+| `mhr_verifier.py` | Validates a₁ against −D²/π² (Proposition 5.1). Verdicts: RANK_ZERO / RANK_GE1. |
+| `a1_calibrator.py` | Calibrates deformation.py parameters against benchmark curves. |
+| `verify_real_solver.py` | Point-by-point comparison vs Part I Tab. 2–4. |
+| `integration_test.py` | Full pipeline test: DeformationEngine + mhr_real_solver. |
+
+### `Part_I/`
+
+| File | Description |
+|------|-------------|
+| `variational.py` | Gaussian ansatz + L-BFGS-B. Proves `lim ΔE = deg φ_E` numerically. |
+
+### `core/`
+
+| File | Description |
+|------|-------------|
+| `linalg_Fp.py` | Gauss–Jordan, det, inverse, rank, solver over F_p. |
+| `linalg_GF2.py` | Bit-packed RREF, null space, matrix product over GF(2). |
+| `lattice.py` | Gaussian 2D reduction, Babai CVP, LLL/BKZ (fpylll), Hermite factor. |
+| `interpolation.py` | Lagrange interpolation, Berlekamp–Massey LFSR synthesis over F_p. |
 
 ---
 
-## Mathematical foundations
+## Mathematical background
 
-### MHR energy functional
+The MHR operator: `H_λ = −λ Δ + λ² V`, `V(x) = ‖Bx‖²`
 
-The variational energy for the Gaussian ansatz ψ_{μ,σ} on a lattice L = BZ^n is:
+Gaussian ansatz energy functional (Part I, eq. 4.2):
+```
+E(μ, σ) = 1/(4σ²) + D(μ² + σ²) + λ[sin²(πμ)·exp(−2π²σ²) + ½(1 − exp(−2π²σ²))]
+```
 
-    E[μ, σ] = ⟨‖B·x‖²⟩_{N(μ,σ²)} + λ · ⟨Σ_j sin²(π·x_j)⟩_{N(μ,σ²)}
-
-The quadratic term localises the ansatz near short lattice vectors; the confinement term λ·sin²(π·x_j) penalises non-integer coordinates. As λ → ∞, the energy minimum converges to ‖shortest vector‖² [Helffer–Sjöstrand 1984].
-
-### Isotypic lattice construction
-
-Given a generator γ_E of the isotypic component Λ_E ⊂ H₁(X₀(N), ℤ)⁺ with intersection norm ‖γ_E‖²_int = deg φ_E, the MHR operator is built on the lattice B = ‖γ_E‖_int · ℤ. The variational energy minimum then encodes deg φ_E:
-
-    lim_{λ→∞} ΔE(λ) = deg φ_E
-
-where ΔE(λ) = E₁(λ) − E_vac(λ) is the spectral gap. The convergence rate for the spectral gap is ε ∼ O(λ⁻¹), as derived in Timakov (2026). See [Helffer–Sjöstrand 1984] for the semiclassical localisation theory underlying this convergence.
+Asymptotic expansion (Part II, Lemma A.1 [F]):
+```
+ΔE(λ) = D − (D²/π²)·λ⁻¹ + O(λ⁻³/²),   a₁ = −D²/π² < 0
+```
 
 ---
 
-## References
+## Citation
 
-- Gauss, C.F. (1801). *Disquisitiones Arithmeticae*.
-- Lenstra, A.K., Lenstra, H.W. & Lovász, L. (1982). Factoring polynomials with rational coefficients. *Math. Ann.* 261, 515–534.
-- Babai, L. (1986). On Lovász' lattice reduction and the nearest lattice point problem. *Combinatorica* 6(1), 1–13.
-- Schnorr, C.P. & Euchner, M. (1994). Lattice basis reduction. *Math. Programming* 66, 181–199.
-- Helffer, B. & Sjöstrand, J. (1984). Multiple wells in the semi-classical limit I. *Comm. PDE* 9(4), 337–408.
-- von zur Gathen, J. & Gerhard, J. (2013). *Modern Computer Algebra* (3rd ed.). Cambridge University Press.
-- Berlekamp, E.R. (1968). *Algebraic Coding Theory*. McGraw-Hill.
-- Massey, J.L. (1969). Shift-register synthesis and BCH decoding. *IEEE Trans. Inf. Theory* 15(1), 122–127.
-- Nguyen, P.Q. & Vallée, B. (Eds.) (2010). *The LLL Algorithm*. Springer.
+```bibtex
+@software{timakov2026code,
+  author = {Timakov, Andrew},
+  title  = {mhr-numerics: Numerical Mathematics Library for Arithmetic Spectroscopy},
+  year   = {2026},
+  doi    = {10.5281/zenodo.19165246},
+  url    = {https://github.com/TimakovGenesis/mhr-numerics}
+}
+```
 
 ---
 
 ## License
 
-MIT License. Copyright (c) 2026 A. Timakov.
+MIT. See `LICENSE` for details.
+
