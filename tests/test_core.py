@@ -14,12 +14,10 @@ import math
 import sys
 import os
 import random
-
 import numpy as np
 import pytest
-import sys, os
 
-# Add parent to path for direct execution
+# Настройка путей для корректного нахождения пакетов core и Part_I
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.linalg_Fp import (
