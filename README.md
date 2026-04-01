@@ -12,7 +12,7 @@ Companion code to the paper series:
 |------|-------|--------|-----|
 | I | Foundations of arithmetic spectroscopy | Submitted: *Exp. Math.* ID 267435039 | [10.5281/zenodo.19183116](https://doi.org/10.5281/zenodo.19183116) |
 | II | The spectral rank criterion and Selmer theory | Ready for submission | [10.5281/zenodo.19373067](https://doi.org/10.5281/zenodo.19373067) |
-| III | Néron–Tate regulator from spectral deformation | Planned | — |
+| III | Néron–Tate regulator from spectral deformation | Manuscript in preparation | — |
 
 ---
 
