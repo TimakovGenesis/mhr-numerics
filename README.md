@@ -2,6 +2,7 @@
 
 [![Python Test Suite](https://github.com/TimakovGenesis/mhr-numerics/actions/workflows/pytest.yml/badge.svg)](https://github.com/TimakovGenesis/mhr-numerics/actions/workflows/pytest.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19165246.svg)](https://doi.org/10.5281/zenodo.19165246)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19322914.svg)](https://doi.org/10.5281/zenodo.19322914)
 
 **Numerical Mathematics Library for Arithmetic Spectroscopy**
 
